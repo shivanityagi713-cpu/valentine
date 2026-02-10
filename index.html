@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Valentine ❤️</title>
+
+<style>
+body {
+    margin: 0;
+    height: 100vh;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #ffd1dc, #ffe6f0);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.card {
+    background: white;
+    padding: 40px;
+    border-radius: 30px;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+    width: 460px;
+}
+
+h1 {
+    color: #ff2f68;
+}
+
+.message {
+    height: 40px;
+    font-size: 22px;
+    font-weight: bold;
+    color: red;
+}
+
+.buttons {
+    position: relative;
+    height: 200px;
+    margin-top: 20px;
+}
+
+/* HEART */
+.heart {
+    width: 120px;
+    height: 110px;
+    background: #ff1f4d;
+    position: absolute;
+    transform: rotate(-45deg);
+    cursor: pointer;
+    box-shadow: 0 12px 25px rgba(0,0,0,0.4);
+}
+
+.heart::before,
+.heart::after {
+    content: "";
+    width: 120px;
+    height: 110px;
+    background: #ff1f4d;
+    border-radius: 50%;
+    position: absolute;
+}
+
+.heart::before { top: -60px; left: 0; }
+.heart::after { top: 0; left: 60px; }
+
+.heart span {
+    position: absolute;
+    transform: rotate(45deg);
+    color: white;
+    font-weight: bold;
+    font-size: 22px;
+    top: 42px;
+    left: 34px;
+}
+
+/* YES */
+#yesBtn {
+    left: 70px;
+    animation: beat 1s infinite;
+}
+
+/* NO */
+#noBtn {
+    right: 70px;
+}
+
+/* BEAT */
+@keyframes beat {
+    0% { transform: rotate(-45deg) scale(1); }
+    50% { transform: rotate(-45deg) scale(1.12); }
+    100% { transform: rotate(-45deg) scale(1); }
+}
+
+/* RESULT */
+.result {
+    position: fixed;
+    inset: 0;
+    background: url('couple.jpg') center/cover no-repeat;
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+
+.overlay {
+    background: rgba(0,0,0,0.6);
+    padding: 50px;
+    border-radius: 30px;
+    max-width: 700px;
+    text-align: center;
+    color: #ffeef3;
+}
+
+canvas {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 10;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card" id="card">
+    <h1>Nonu, will you be my Valentine? 💘</h1>
+    <div class="message" id="message"></div>
+
+    <div class="buttons">
+        <div class="heart" id="yesBtn"><span>YES</span></div>
+        <div class="heart" id="noBtn"><span>NO</span></div>
+    </div>
+</div>
+
+<div class="result" id="result">
+    <div class="overlay">
+        <h2>Thank you for saying yes… again 😌</h2>
+        <p>
+            Three Valentine’s in and you’re still choosing me—either that’s true love
+            or you’ve forgotten how to escape.  
+            Either way, I’m grateful beyond words and so lucky to call you mine ❤️  
+            <br><br>
+            Love you so much Nonu ❤️
+        </p>
+    </div>
+</div>
+
+<canvas id="celebration"></canvas>
+
+<audio id="music" src="die-with-a-smile.mp3"></audio>
+<audio id="laugh" src="laugh.mp3"></audio>
+<audio id="bomb" src="bomb.mp3"></audio>
+
+<script>
+const noBtn = document.getElementById('noBtn');
+const yesBtn = document.getElementById('yesBtn');
+const message = document.getElementById('message');
+const card = document.getElementById('card');
+const result = document.getElementById('result');
+
+const music = document.getElementById('music');
+const laugh = document.getElementById('laugh');
+const bomb = document.getElementById('bomb');
+
+let noClicks = 0;
+
+noBtn.addEventListener('click', () => {
+    noClicks++;
+    laugh.currentTime = 0;
+    laugh.play();
+
+    if (noClicks === 1) {
+        noBtn.style.position = 'fixed';
+        noBtn.style.top = '40px';
+        noBtn.style.left = '40px';
+    }
+    if (noClicks === 2) {
+        noBtn.style.top = 'auto';
+        noBtn.style.left = 'auto';
+        noBtn.style.bottom = '40px';
+        noBtn.style.right = '40px';
+    }
+    if (noClicks === 3) {
+        bomb.play();
+        celebrationBlast();
+        message.innerHTML = "Why are you even trying? 😭😡";
+    }
+});
+
+yesBtn.addEventListener('click', () => {
+    card.style.display = 'none';
+    result.style.display = 'flex';
+    music.play();
+});
+
+/* 🎉 CELEBRATION BLAST */
+const canvas = document.getElementById('celebration');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let confetti = [];
+
+function celebrationBlast() {
+    confetti = [];
+    for (let i = 0; i < 600; i++) {
+        confetti.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            size: Math.random() * 8 + 4,
+            speed: Math.random() * 2 + 1,
+            color: `hsl(${Math.random()*360},100%,65%)`
+        });
+    }
+
+    let start = Date.now();
+
+    function animate() {
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        confetti.forEach(p => {
+            ctx.fillStyle = p.color;
+            ctx.fillRect(p.x, p.y, p.size, p.size * 2);
+            p.y += p.speed;
+            if (p.y > canvas.height) p.y = -10;
+        });
+
+        if (Date.now() - start < 5000) {
+            requestAnimationFrame(animate);
+        } else {
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+        }
+    }
+    animate();
+}
+</script>
+
+</body>
+</html>
